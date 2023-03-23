@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block style %}
+<style>
+#main, #footer {
+    margin-left: 0px !important;
+}
+
+</style>
+{% endblock %}
+
+
+{% block breadcrumb %}
+<h1>Previsão de descarga do navio</h1>
+<nav>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item active">Procurar contentor</li>
+    </ol>
+</nav>
+{% endblock %}
+
+
+
+
+{% block content %}
+
+<form action="/">
+    <div class="row" style="max-width: 30rem;">
+        <div class="col d-flex align-items-center flex-row">
+            <input id="input_input1" placeholder="ENMU" style="width: 40%" name="input1" type="text" />
+            <input id="input_input2" placeholder="123456" style="width: 50%" min="0" name="input2" type="text" />
+            <span class="mx-3">/</span>
+            <input id="input_input3" placeholder="7" style="width: 10%" min="0" max="9" name="input3" type="text" />
+            <button class="btn btn-primary ms-3" type="submit">Procurar</button>
+        </div>
+
+    </div>
+</form>
+
+<div class="row mt-5">
+
+    <h5 id="error_message" style="color:red; display: none;"></h5>
+    <h5 id="result_message" style="display: none;"></h5>
+
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+
+
+    var errorCode = "{{error}}";
+
+    var sup = "{{sup}}";
+    var inf = "{{inf}}";
+    $(function () {
+
+        $('#sidebar-toggle').hide();
+
+        /* Prefill form with query parameters */
+        $('#input_input1').val(getUrlParameter('input1'))
+        $('#input_input2').val(getUrlParameter('input2'))
+        $('#input_input3').val(getUrlParameter('input3'))
+
+
+        /* Validation of error */
+        if (errorCode !== "") {
+
+            var message = "Erro interno! Contacte a equipa de sistemas";
+
+            if (errorCode === "notfound")
+                message = "Carga não encontrada. Por favor rever os a informação inserida.";
+
+            else if (errorCode === "excelNotLoaded")
+                message = "Ainda não foi possível estabelecer previsão de descarga do navio. Por favor, tente mais tarde"
+
+
+            $('#error_message').text(message);
+            $('#error_message').show();
+
+        }
+
+        /* Show result message */
+        if (sup !== "" && inf !== "") {
+            var message = "Período de descarga previsto entre " + inf + " e " + sup;
+            
+            $('#result_message').text(message);
+            $('#result_message').show();
+        }
+
+    })
+
+    function getUrlParameter(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(location.search);
+        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    }
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,458 @@
+{% extends 'base.html' %}
+
+{% block sidebar %}
+
+<body>
+    <!-- ======= Sidebar ======= -->
+    <aside id="sidebar" class="sidebar">
+
+        <ul class="sidebar-nav" id="sidebar-nav">
+
+            <li class="nav-item">
+                <a class="nav-link " href="{% url 'trelas-view' %}">
+                    <i class="bi bi-grid"></i>
+                    <span>Procurar</span>
+                </a>
+            </li><!-- End Dashboard Nav -->
+
+
+
+            <li class="nav-heading">Configuração</li>
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="{% url 'encarregado-view' %}">
+                    <i class="bi bi-person"></i>
+                    <span>Upload</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="{% url 'modificar-excel' %}">
+                    <i class="bi bi-pencil"></i>
+                    <span>Modificar</span>
+                </a>
+            </li><!-- End Profile Page Nav -->
+
+        </ul>
+
+    </aside><!-- End Sidebar-->
+</body>
+{% endblock %}
+
+{% block breadcrumb %}
+<h1>EDIT</h1>
+<nav>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item active">Cada tabela tem um botão para guardar alterações.</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+
+<!-- INI:ORDEM -->
+
+<div id="ordem_container">
+
+    <div class="d-flex mt-3" style="justify-content: space-between; padding-right: 24px;">
+        <h1>Ordem</h1>
+        <button id="ordem_upd_btn" class="btn btn-sm btn-primary">Guardar ordem</button>
+    </div>
+    <p>Em cada célula escrever ordem de descarga do navio por bay - começar por '1'.</p>
+    <div id="ordem_row" class="row" style="max-width: 100%;">
+        <div class="col d-flex align-items-center flex-row">
+            <input style="width: 20%" type="text" value="Nível" disabled />
+
+            <input style="width: 10%" type="text" value="B_28" disabled />
+            <input style="width: 10%" type="text" value="B_24" disabled />
+            <input style="width: 10%" type="text" value="B_20" disabled />
+            <input style="width: 10%" type="text" value="B_17" disabled />
+            <input style="width: 10%" type="text" value="B_14" disabled />
+            <input style="width: 10%" type="text" value="B_10" disabled />
+            <input style="width: 10%" type="text" value="B_6" disabled />
+            <input style="width: 10%" type="text" value="B_2" disabled />
+
+        </div>
+    </div>
+
+    <div id="ordem_row_values">
+
+    </div>
+</div>
+<!-- END:ORDEM -->
+
+<p></p>
+<p>'Ordem' e 'Gruas' devem ser preenchidas em simultâneo.</p>
+
+<!-- INI:GRUAS -->
+<div id="gruas_container">
+
+
+
+    <div class="d-flex mt-3" style="justify-content: space-between; padding-right: 24px;">
+        <h1>Gruas</h1>
+        <button id="gruas_upd_btn" class="btn btn-sm btn-primary">Guardar gruas</button>
+    </div>
+    <p>Em cada célula escrever a grua a usar para descarregar a bay. Se for só uma, usar 'A' ou 'B'</p>
+    <div id="gruas_row" class="row" style="max-width: 100%;">
+        <div class="col d-flex align-items-center flex-row">
+            <input style="width: 20%" type="text" value="Nível" disabled />
+
+            <input style="width: 10%" type="text" value="B_28" disabled />
+            <input style="width: 10%" type="text" value="B_24" disabled />
+            <input style="width: 10%" type="text" value="B_20" disabled />
+            <input style="width: 10%" type="text" value="B_17" disabled />
+            <input style="width: 10%" type="text" value="B_14" disabled />
+            <input style="width: 10%" type="text" value="B_10" disabled />
+            <input style="width: 10%" type="text" value="B_6" disabled />
+            <input style="width: 10%" type="text" value="B_2" disabled />
+
+        </div>
+    </div>
+
+    <div id="gruas_row_values">
+
+    </div>
+
+</div>
+<!-- END:GRUAS -->
+
+
+<!-- INI:HORA -->
+<div id="hora_container">
+
+
+    <div class="d-flex mt-3" style="justify-content: space-between; padding-right: 24px;">
+        <h1>Hora</h1>
+        
+        <button id="hora_upd_btn" class="btn btn-sm btn-primary">Guardar hora</button>
+    </div>
+    <p>Atualizar com a Hora Real de descarga de cada bay. Formato HH:MM:00 - ex: 09:14:00.</p>
+    <div id="hora_row" class="row" style="max-width: 100%;">
+        <div class="col d-flex align-items-center flex-row">
+            <input style="width: 20%" type="text" value="Nível" disabled />
+
+            <input style="width: 10%" type="text" value="B_28" disabled />
+            <input style="width: 10%" type="text" value="B_24" disabled />
+            <input style="width: 10%" type="text" value="B_20" disabled />
+            <input style="width: 10%" type="text" value="B_17" disabled />
+            <input style="width: 10%" type="text" value="B_14" disabled />
+            <input style="width: 10%" type="text" value="B_10" disabled />
+            <input style="width: 10%" type="text" value="B_6" disabled />
+            <input style="width: 10%" type="text" value="B_2" disabled />
+
+        </div>
+    </div>
+
+    <div id="hora_row_values">
+
+    </div>
+
+</div>
+
+<!-- END:HORA -->
+
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+
+
+
+    var editor;
+
+    var updOrdemBtn;
+    var updGruasBtn;
+    var updHoraBtn;
+
+    $(function () {
+        /*
+        Rules:
+            index is the column
+            i[0] disabled, ex: C5, PC
+        */
+
+        $.get('/getOrdemData', function (res) {
+
+            if (!res) {
+                alert("Erro ao obter os dados da ordem");
+                return;
+            }
+
+            var data = res.result;
+            renderOrdemTable(data)
+        });
+
+        $.get('/getGruasData', function (res) {
+
+            if (!res) {
+                alert("Erro ao obter os dados das gruas");
+                return;
+            }
+
+            var data = res.result;
+            renderGruasTable(data)
+        });
+
+        $.get('/getHoraData', function (res) {
+
+            if (!res) {
+                alert("Erro ao obter os dados da hora");
+                return;
+            }
+
+            var data = res.result;
+            renderHoraTable(data)
+        });
+
+        /* Register events */
+
+        updOrdemBtn = $('#ordem_upd_btn');
+        updGruasBtn = $('#gruas_upd_btn');
+        updHoraBtn = $('#hora_upd_btn');
+
+        updOrdemBtn.on('click', function () {
+
+            var data = getTableInputData('ordem');
+            submitDataToTable('ordem', data);
+        })
+
+        updGruasBtn.on('click', function () {
+            var data = getTableInputData('gruas');
+            submitDataToTable('gruas', data);
+
+        })
+
+        updHoraBtn.on('click', function () {
+
+            var data = getTableInputData('hora');
+            submitDataToTable('hora', data);
+
+        })
+
+
+    })
+
+    /* RENDER FUNCTION */
+    function renderOrdemTable(data) {
+        var rowDataContainer = $('#ordem_row_values');
+
+        for (let i = 0; i < data.length; i++) {
+            const rowData = data[i];
+            // debugger
+            var row = createRow('ordem', rowData);
+
+            rowDataContainer.append(row);
+
+        }
+    }
+
+    function renderGruasTable(data) {
+        var rowDataContainer = $('#gruas_row_values');
+
+        for (let i = 0; i < data.length; i++) {
+            const rowData = data[i];
+            // debugger
+            var row = createRow('gruas', rowData);
+
+            rowDataContainer.append(row);
+
+        }
+    }
+
+    function renderHoraTable(data) {
+        var rowDataContainer = $('#hora_row_values');
+
+        for (let i = 0; i < data.length; i++) {
+            const rowData = data[i];
+            // debugger
+            var row = createRow('hora', rowData);
+
+            rowDataContainer.append(row);
+
+        }
+    }
+
+    function createRow(tableType, data) {
+
+        var row = $('<div class="row" style="max-width: 100%;">').attr('id', 'row_' + data[0]);
+        var col = $('<div class="col d-flex align-items-center flex-row">').attr('id', 'col_' + data[0]);
+
+        row.append(col);
+
+        // Allways disabled
+        var nivel = $('<input style="width: 20%" type="text" disabled/>')
+            .attr('id', 'nivel_' + data[0])
+            .prop('name', 'nivel_' + data[0])
+            .val(data[0]);
+
+        col.append(nivel);
+
+        // Determine input type based on table type
+        var type = 'text';
+        if (tableType === 'ordem') {
+            type = 'number';
+        } else if (tableType === 'gruas') {
+            type = 'text'
+
+        } else if (tableType === 'horas') {
+            type = 'text'
+            // TODO: criar mascaras __:__:__
+        }
+
+        // Iterate the remaining fields, if the value is -1 do not show and disabled it
+        for (let i = 1; i < data.length; i++) {
+            const value = data[i];
+
+            var identifier = getFieldNameBasedOnIndex(i);
+
+            var id = 'nivel_' + data[0] + '_col_' + identifier;
+            var input = $('<input style="width: 10%" type="text" />',)
+                .attr('id', id);
+
+
+            if (isDisabledRow(id)) {
+                input.prop("disabled", true);
+            }
+
+            if (value !== -1 && value !== '-1' ) {
+                input.val(value);
+            }
+
+            col.append(input);
+        }
+
+        return row;
+    }
+
+
+    function isDisabledRow(identifier) {
+
+        var arr = [
+            'nivel_C5_col_B_10',
+            'nivel_C5_col_B_6',
+            'nivel_C5_col_B_2',
+            'nivel_C4_col_B_2',
+            'nivel_C1_col_B_6',
+            'nivel_C1_col_B_2',
+            'nivel_PC_col_B_24',
+            'nivel_PC_col_B_20',
+            'nivel_PC_col_B_17',
+            'nivel_PC_col_B_14',
+            'nivel_PC_col_B_10',
+            'nivel_PC_col_B_6',
+            'nivel_PC_col_B_2',
+            'nivel_P5_col_B_28',
+            'nivel_P5_col_B_24',
+            'nivel_P5_col_B_20',
+            'nivel_P5_col_B_17',
+            'nivel_P5_col_B_14',
+            'nivel_P5_col_B_10',
+            'nivel_P4_col_B_28',
+            'nivel_P4_col_B_17',
+            'nivel_P3_col_B_28',
+            'nivel_P3_col_B_17',
+            'nivel_P2_col_B_28',
+            'nivel_P2_col_B_17',
+            'nivel_P1_col_B_28',
+            'nivel_P1_col_B_17',
+            'nivel_P1_col_B_2',
+        ];
+
+        return arr.includes(identifier)
+    }
+    /* ****************************************** */
+
+
+    /* UPD FUNCTION */
+
+    function getTableInputData(table) {
+
+        /* GET the row values element container */
+        var rowValuesContainer = $('#' + table + '_row_values');
+
+        var data = [];
+
+        rowValuesContainer.children().each(function () {
+
+            var subData = [];
+            var rowValue = $(this);
+
+            var col = rowValue.find('.col');
+            var i
+            col.children('input').each(function (index) {
+
+                var value = $(this).val();
+                
+                if (value === '') value = '-1';
+
+                /* Cast the values if not the first row */
+                var type = getTypeFromTable(table);
+                if (index !== 0 && type === 'number') {
+                    
+                    value = +(value);
+                }
+
+                subData.push(value);
+            })
+
+            data.push(subData);
+
+        })
+
+        return data;
+    }
+
+    function submitDataToTable(table, data) {
+
+        var body = JSON.stringify( {'tabela': table, 'data': data});
+
+        $.post('/updateData/', {body});
+    }
+
+    /* ****************************************** */
+
+    /* GENERAL FUNCTIONS */
+
+    function getFieldNameBasedOnIndex(index) {
+
+        switch (index) {
+            case 0:
+                return 'Nivel';
+            case 1:
+                return 'B_28';
+            case 2:
+                return 'B_24';
+            case 3:
+                return 'B_20';
+            case 4:
+                return 'B_17';
+            case 5:
+                return 'B_14';
+            case 6:
+                return 'B_10';
+            case 7:
+                return 'B_6';
+            case 8:
+                return 'B_2';
+            default:
+                return 'Erro';
+        }
+
+    }
+
+    function getTypeFromTable(table) {
+        switch (table) {
+            case 'ordem': return 'number';
+            case 'gruas':
+            case 'hora': return 'text';
+        }
+    }
+
+    /* ****************************************** */
+
+
+</script>
+
+{% endblock %}
